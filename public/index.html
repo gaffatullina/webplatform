@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ПолитАктив</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f3efe8;--bg2:#faf8f4;--bg3:#ffffff;--bg4:#ece8e1;--bg5:#e8e3db;
+  --border:#ddd8cf;--border2:#ccc5bb;
+  --text:#2c2820;--text2:#6b6055;--text3:#a09282;
+  --acc:#6c5ce7;--acc2:#8b7cf0;--acc-bg:#eeecff;--acc-bd:#c8c1f8;
+  --grn:#2d9e72;--grn-bg:#e3f5ed;--grn-bd:#a8dfc5;
+  --amb:#c97c2a;--amb-bg:#fef2e3;--amb-bd:#f5ca8a;
+  --ros:#c0486a;--ros-bg:#fdedf3;--ros-bd:#f0b8cc;
+  --blu:#3a7fc0;--blu-bg:#e7f1fb;--blu-bd:#aecfee;
+  --r:13px;--rsm:8px;--rlg:20px;
+  --sh:0 2px 14px rgba(80,60,30,.09);--sh2:0 6px 28px rgba(80,60,30,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.serif{font-family:'Playfair Display',serif}
+
+/* OVERLAY + DRAWER */
+.ov{position:fixed;inset:0;background:rgba(44,40,32,.35);z-index:100;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(3px)}
+.ov.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;left:0;top:0;bottom:0;width:288px;background:var(--bg3);border-right:1px solid var(--border);z-index:101;transform:translateX(-100%);transition:transform .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:var(--sh2)}
+.drawer.open{transform:translateX(0)}
+.dl{padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px}
+.dl-mk{width:36px;height:36px;background:var(--acc);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dl-mk svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dl-tx{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.1}
+.dl-tx small{display:block;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;color:var(--text3);letter-spacing:.02em;margin-top:2px}
+.du{margin:10px 14px;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .18s}
+.du:hover{border-color:var(--border2);background:var(--bg4)}
+.du-av{width:32px;height:32px;border-radius:50%;background:var(--acc-bg);border:2px solid var(--acc-bd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--acc);flex-shrink:0}
+.du-nm{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.du-rl{font-size:10px;color:var(--text3)}
+.du-ac{font-size:10px;color:var(--acc);font-weight:600;white-space:nowrap;margin-left:auto}
+.dnav{flex:1;overflow-y:auto;padding:6px 10px}
+.dsec{margin-bottom:2px}
+.dsl{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:10px 8px 4px}
+.di{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:var(--rsm);cursor:pointer;transition:all .13s;border:1px solid transparent;color:var(--text2);font-size:13px;font-weight:500;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.di:hover{background:var(--bg);color:var(--text);border-color:var(--border)}
+.di.on{background:var(--acc-bg);color:var(--acc);border-color:var(--acc-bd);font-weight:600}
+.di-ic{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:var(--bg4)}
+.di.on .di-ic{background:var(--acc-bd)}
+.di-badge{margin-left:auto;background:var(--ros-bg);color:var(--ros);font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;border:1px solid var(--ros-bd)}
+.dfoot{padding:12px 14px;border-top:1px solid var(--border)}
+.btn-login{width:100%;padding:10px;border:none;border-radius:var(--rsm);background:var(--acc);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-login:hover{background:var(--acc2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(108,92,231,.3)}
+.btn-logout{background:var(--bg4)!important;color:var(--text2)!important;border:1px solid var(--border)!important;box-shadow:none!important;transform:none!important}
+.btn-logout:hover{color:var(--ros)!important;border-color:var(--ros-bd)!important}
+
+/* TOPBAR */
+.tb{position:sticky;top:0;z-index:50;background:rgba(243,239,232,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 22px;height:56px;display:flex;align-items:center;gap:12px}
+.tb-tog{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;background:var(--bg3);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .18s;flex-shrink:0}
+.tb-tog:hover{border-color:var(--border2);background:var(--bg4)}
+.tb-tog span{width:15px;height:1.5px;background:var(--text);border-radius:2px;display:block;transition:all .3s}
+.tb-tog.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.tb-tog.open span:nth-child(2){opacity:0}
+.tb-tog.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)}
+.tb-logo .a{color:var(--acc)}
+.tb-live{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--grn);font-weight:600;background:var(--grn-bg);padding:3px 9px;border-radius:20px;border:1px solid var(--grn-bd)}
+.tb-live-dot{width:5px;height:5px;background:var(--grn);border-radius:50%;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-pt{font-size:13px;color:var(--text2);margin-left:6px}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:9px}
+.tb-upill{display:flex;align-items:center;gap:7px;padding:4px 11px 4px 4px;border:1px solid var(--border);border-radius:20px;background:var(--bg3);cursor:pointer;transition:all .18s;font-size:12px;color:var(--text2)}
+.tb-upill:hover{border-color:var(--border2);background:var(--bg4)}
+.tb-uav{width:24px;height:24px;border-radius:50%;background:var(--acc-bg);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--acc)}
+
+/* MODAL */
+.mw{position:fixed;inset:0;background:rgba(44,40,32,.42);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(4px)}
+.mw.open{opacity:1;pointer-events:all}
+.mc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rlg);width:100%;max-width:450px;padding:26px;box-shadow:var(--sh2)}
+.mc h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--text);margin-bottom:5px}
+.mc-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.rc{padding:13px 11px;border:1.5px solid var(--border);border-radius:var(--rsm);cursor:pointer;transition:all .18s;background:var(--bg)}
+.rc:hover{border-color:var(--border2);background:var(--bg4)}
+.rc.sel{border-color:var(--acc);background:var(--acc-bg)}
+.rc-i{font-size:18px;margin-bottom:6px}
+.rc-n{font-size:12px;font-weight:600;color:var(--text)}
+.rc-d{font-size:10px;color:var(--text3);margin-top:2px}
+.msel{width:100%;padding:9px 13px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:16px;appearance:none;cursor:pointer;outline:none}
+.msel:focus{border-color:var(--acc)}
+.mbts{display:flex;gap:9px}
+.btn-c{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:var(--rsm);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .18s}
+.btn-c:hover{border-color:var(--border2);color:var(--text)}
+.btn-ok{flex:1;padding:9px;border:none;border-radius:var(--rsm);background:var(--acc);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s}
+.btn-ok:hover:not(:disabled){background:var(--acc2)}
+.btn-ok:disabled{opacity:.35;cursor:not-allowed}
+.qr-mc{max-width:360px}
+.qr-box{width:180px;height:180px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+.qr-id{font-family:monospace;font-size:10px;color:var(--text3);text-align:center;word-break:break-all;margin-bottom:14px}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.t-it{background:var(--blu-bg);color:var(--blu);border:1px solid var(--blu-bd)}
+.t-so{background:var(--grn-bg);color:var(--grn);border:1px solid var(--grn-bd)}
+.t-me{background:var(--ros-bg);color:var(--ros);border:1px solid var(--ros-bd)}
+.t-now{background:var(--amb-bg);color:var(--amb);border:1px solid var(--amb-bd)}
+.t-soon{background:var(--acc-bg);color:var(--acc);border:1px solid var(--acc-bd)}
+.t-past{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+.chip{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid transparent;display:inline-flex;align-items:center}
+.ch-a{background:var(--acc-bg);color:var(--acc);border-color:var(--acc-bd)}
+.ch-g{background:var(--grn-bg);color:var(--grn);border-color:var(--grn-bd)}
+.ch-r{background:var(--ros-bg);color:var(--ros);border-color:var(--ros-bd)}
+.ch-b{background:var(--amb-bg);color:var(--amb);border-color:var(--amb-bd)}
+
+/* GENERIC */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+.crd-sm{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);padding:13px}
+.sec-hd{margin-bottom:18px}
+.sec-ti{font-family:'Playfair Display',serif;font-size:21px;color:var(--text);margin-bottom:3px}
+.sec-su{font-size:12px;color:var(--text3)}
+.fb{display:flex;gap:7px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.fc{padding:5px 13px;border:1.5px solid var(--border);border-radius:20px;background:var(--bg3);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.fc:hover{border-color:var(--border2);color:var(--text)}
+.fc.on{border-color:var(--acc);background:var(--acc-bg);color:var(--acc);font-weight:600}
+.fc-sel{padding:5px 11px;border:1.5px solid var(--border);border-radius:20px;background:var(--bg3);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;outline:none;margin-left:auto;appearance:none}
+.fc-sel:focus{border-color:var(--acc)}
+.ba{padding:7px 14px;border:1.5px solid var(--border);border-radius:var(--rsm);background:var(--bg3);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.ba:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-bg)}
+.ba.pri{background:var(--acc);border-color:var(--acc);color:white}
+.ba.pri:hover{background:var(--acc2);border-color:var(--acc2)}
+.ba.gri{border-color:var(--grn-bd);color:var(--grn);background:var(--grn-bg);cursor:default}
+.ba.ambi{border-color:var(--amb-bd);color:var(--amb);background:var(--amb-bg);cursor:default}
+.ba.dan{background:var(--ros-bg);border-color:var(--ros-bd);color:var(--ros)}
+
+/* EVENTS GRID */
+.evgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.evc{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rlg);padding:18px;transition:all .2s;cursor:default}
+.evc:hover{border-color:var(--border2);box-shadow:var(--sh2);transform:translateY(-2px)}
+.evc-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.evc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.evc-coeff{font-size:10px;color:var(--text3);background:var(--bg4);padding:2px 8px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
+.evc-ti{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:6px}
+.evc-de{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.evc-meta{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.evc-mi{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
+.evc-mi svg{width:11px;height:11px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.evc-pts{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.evc-pv{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--acc)}
+.evc-pl{font-size:10px;color:var(--text3)}
+.evc-prizes{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.cbar{width:100%;height:4px;background:var(--bg4);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.cbar-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--grn),var(--acc))}
+.evc-ft{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.evc-org{font-size:11px;color:var(--blu);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+
+/* LEADERBOARD */
+.lb-wrap{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rlg);overflow:hidden;box-shadow:var(--sh)}
+.lb-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.lb-hd h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--text)}
+.lb-cols{display:grid;grid-template-columns:44px 1fr 100px 80px 80px;gap:9px;padding:9px 20px;border-bottom:1px solid var(--border);background:var(--bg)}
+.lb-ch{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+.lb-row{display:grid;grid-template-columns:44px 1fr 100px 80px 80px;gap:9px;padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.04);transition:background .13s;align-items:center;cursor:pointer}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:var(--bg)}
+.lb-row.p1{background:#fffaf0}.lb-row.p2{background:#f8f8ff}.lb-row.p3{background:#fdf6f0}
+.lb-rk{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;text-align:center;color:var(--text3)}
+.lb-rk.r1{color:#c08010}.lb-rk.r2{color:#6070a0}.lb-rk.r3{color:#a06040}
+.lb-per{display:flex;align-items:center;gap:9px}
+.lb-av{width:32px;height:32px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2);border:2px solid var(--border);flex-shrink:0}
+.lb-av.r1{border-color:#e0a030}.lb-av.r2{border-color:#90a0c0}.lb-av.r3{border-color:#c08060}
+.lb-nm{font-size:13px;font-weight:600;color:var(--text)}
+.lb-ci{font-size:11px;color:var(--text3)}
+.lb-pts{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--acc);text-align:right}
+.lb-ec{font-size:12px;color:var(--text2);text-align:center}
+.lb-dr{text-align:right}
+
+/* PROFILE HERO */
+.ph{background:linear-gradient(135deg,var(--acc-bg) 0%,var(--bg3) 60%);border:1.5px solid var(--acc-bd);border-radius:var(--rlg);padding:22px;margin-bottom:18px}
+.ph-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+.ph-av{width:58px;height:58px;border-radius:16px;background:var(--acc-bg);border:2px solid var(--acc-bd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--acc);flex-shrink:0}
+.ph-nm{font-family:'Playfair Display',serif;font-size:21px;color:var(--text);margin-bottom:4px}
+.ph-meta{font-size:12px;color:var(--text3)}
+.ph-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ph-st{background:var(--bg3);border-radius:var(--rsm);padding:12px;text-align:center;border:1px solid var(--border)}
+.ph-sv{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--acc)}
+.ph-sl{font-size:10px;color:var(--text3);margin-top:2px}
+.pbar{width:100%;height:7px;background:var(--bg4);border-radius:4px;overflow:hidden;margin:7px 0}
+.pbar-f{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--grn),var(--acc))}
+
+/* ORG HERO */
+.oh{background:linear-gradient(135deg,var(--grn-bg) 0%,var(--bg3) 60%);border:1.5px solid var(--grn-bd);border-radius:var(--rlg);padding:20px;margin-bottom:16px}
+.stars{display:flex;align-items:center;gap:4px;margin-top:6px}
+.star{color:var(--amb);font-size:14px}.star.e{color:var(--border2)}
+
+/* INSPECTOR */
+.ins-flt{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld-l{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+.inp{padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--rsm);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none}
+.inp:focus{border-color:var(--acc)}
+.ct-wrap{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rlg);overflow:hidden;box-shadow:var(--sh)}
+.ct-hd{display:grid;grid-template-columns:1fr 90px 55px 75px 95px 65px;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg)}
+.ct-hc{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+.ct-r{display:grid;grid-template-columns:1fr 90px 55px 75px 95px 65px;gap:8px;padding:10px 16px;border-bottom:1px solid rgba(0,0,0,.04);transition:background .13s;cursor:pointer;align-items:center}
+.ct-r:last-child{border-bottom:none}
+.ct-r:hover{background:var(--bg)}
+
+/* ADMIN */
+.adgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fl{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.fi{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--acc)}
+.fi[type=range]{padding:7px 0;background:none;border:none;cursor:pointer}
+.ftx{min-height:70px;resize:vertical}
+.wr{display:flex;align-items:center;gap:12px;padding:9px 12px;background:var(--bg);border-radius:var(--rsm);border:1px solid var(--border);margin-bottom:7px}
+.wl{flex:1;font-size:12px;font-weight:500;color:var(--text)}
+.wv{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--acc);min-width:32px;text-align:right}
+.cq-i{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:9px}
+
+/* DASHBOARD */
+.dash-g{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+.feed-i{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;gap:10px;align-items:flex-start}
+.feed-i:last-child{border-bottom:none}
+.feed-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.tc{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.tc-tag{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);cursor:default;transition:all .15s}
+.tc-tag:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-bg)}
+
+/* CHART */
+.ac{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+
+/* HOME */
+.hh{background:linear-gradient(135deg,var(--acc-bg) 0%,var(--amb-bg) 50%,var(--grn-bg) 100%);border:1.5px solid var(--border);border-radius:24px;padding:40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+.hh::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(108,92,231,.08),transparent 70%);pointer-events:none}
+.hhta{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid var(--border2);border-radius:20px;font-size:10px;color:var(--text3);font-weight:500;margin-bottom:12px}
+.hh1{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--text);line-height:1.18;margin-bottom:10px}
+.hh1 em{color:var(--acc);font-style:normal}
+.hhd{font-size:13px;color:var(--text2);line-height:1.7;max-width:560px;margin-bottom:22px}
+.hh-sts{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:18px}
+.hs{display:flex;flex-direction:column}
+.hs-v{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text)}
+.hs-v em{color:var(--acc);font-style:normal}
+.hs-l{font-size:10px;color:var(--text3);margin-top:1px}
+.formula{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);font-size:11px;color:var(--text2)}
+.formula code{color:var(--acc);font-size:11px}
+.hf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.hf{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:all .18s;cursor:pointer}
+.hf:hover{border-color:var(--border2);box-shadow:var(--sh);transform:translateY(-2px)}
+.hf-i{font-size:22px;margin-bottom:8px}
+.hf-t{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.hf-d{font-size:11px;color:var(--text3);line-height:1.5}
+
+.pf-i{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.pf-i:last-child{border-bottom:none}
+.pf-pv{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--acc)}
+.pf-ps{font-size:9px;color:var(--text3);text-align:right}
+
+.notice{padding:14px 16px;background:var(--amb-bg);border:1px solid var(--amb-bd);border-radius:var(--r);font-size:13px;color:var(--amb);margin-bottom:16px}
+
+@media(max-width:760px){
+  .main{padding:14px}.tb{padding:0 14px}.hh{padding:24px 18px}.hh1{font-size:22px}
+  .evgrid{grid-template-columns:1fr}.lb-cols,.lb-row{grid-template-columns:36px 1fr 90px}.lb-ec,.lb-dr{display:none}
+  .ph-stats{grid-template-columns:1fr 1fr}.adgrid{grid-template-columns:1fr}
+  .ct-hd,.ct-r{grid-template-columns:1fr 55px 75px 55px}.ct-r :nth-child(2){display:none}
+  .dash-g{grid-template-columns:1fr}.hf-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="ov" id="ov" onclick="closeDrawer()"></div>
+
+<div class="drawer" id="drawer">
+  <div class="dl">
+    <div class="dl-mk"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="dl-tx">ПолитАктив<small>Молодёжный Парламент</small></div>
+  </div>
+  <div class="du" onclick="openLogin()">
+    <div class="du-av" id="dAv">?</div>
+    <div style="flex:1;min-width:0">
+      <div class="du-nm" id="dNm">Войдите в систему</div>
+      <div class="du-rl" id="dRl">Нет роли</div>
+    </div>
+    <div class="du-ac" id="dAc">→</div>
+  </div>
+  <nav class="dnav" id="dNav"></nav>
+  <div class="dfoot">
+    <button class="btn-login" id="dBtn" onclick="openLogin()">Войти в систему</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="mw" id="loginM">
+  <div class="mc">
+    <h2>Выбор роли</h2>
+    <div class="mc-sub">Выберите роль и профиль для входа в платформу</div>
+    <div class="rg">
+      <div class="rc" onclick="selR('participant')" id="rcp"><div class="rc-i">🎯</div><div class="rc-n">Участник</div><div class="rc-d">Копите баллы, участвуйте</div></div>
+      <div class="rc" onclick="selR('organizer')" id="rco"><div class="rc-i">📋</div><div class="rc-n">Организатор</div><div class="rc-d">Создавайте мероприятия</div></div>
+      <div class="rc" onclick="selR('observer')" id="rcb"><div class="rc-i">🔍</div><div class="rc-n">Кадровая служба</div><div class="rc-d">Инспектор и PDF-отчёты</div></div>
+      <div class="rc" onclick="selR('admin')" id="rca"><div class="rc-i">⚙️</div><div class="rc-n">Администратор</div><div class="rc-d">Полный доступ</div></div>
+    </div>
+    <select class="msel" id="pSel" style="display:none"><option value="">— профиль —</option></select>
+    <div class="mbts">
+      <button class="btn-c" onclick="closeLogin()">Отмена</button>
+      <button class="btn-ok" id="lOk" onclick="doLogin()" disabled>Войти</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR -->
+<div class="mw" id="qrM">
+  <div class="mc qr-mc">
+    <h2>QR-код</h2>
+    <div class="mc-sub" id="qrTx">Покажите организатору для подтверждения</div>
+    <div class="qr-box"><svg width="160" height="160" id="qrSvg"></svg></div>
+    <div class="qr-id" id="qrId"></div>
+    <div class="mbts"><button class="btn-ok" style="flex:none;padding:9px 24px" onclick="document.getElementById('qrM').classList.remove('open')">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="tb">
+  <button class="tb-tog" id="tbTog" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  <div class="tb-logo">Полит<span class="a">Актив</span></div>
+  <div class="tb-live"><span class="tb-live-dot"></span>Live</div>
+  <span class="tb-pt" id="tbPT">Главная</span>
+  <div class="tb-r">
+    <div class="tb-upill" onclick="openLogin()">
+      <div class="tb-uav" id="tbAv">?</div>
+      <span id="tbNm">Гость</span>
+    </div>
+  </div>
+</div>
+
+<div class="main" style="max-width:1160px;margin:0 auto;padding:24px 20px">
+
+<!-- HOME -->
+<div id="pg-home">
+  <div class="hh">
+    <div class="hhta">⚡ Молодёжный Парламент · Рейтинговая платформа</div>
+    <div class="hh1">Кадровый резерв <em>будущего</em> —<br>прозрачная система активности</div>
+    <div class="hhd">Автоматический учёт участия в мероприятиях, прозрачный рейтинг кандидатов и инструмент кадровой службы для отбора лучших на реальные должности и стажировки.</div>
+    <div class="hh-sts">
+      <div class="hs"><div class="hs-v" id="hs1">55</div><div class="hs-l">мероприятий</div></div>
+      <div class="hs"><div class="hs-v" id="hs2">120</div><div class="hs-l">участников</div></div>
+      <div class="hs"><div class="hs-v" id="hs3">—</div><div class="hs-l">подтверждений</div></div>
+      <div class="hs"><div class="hs-v">5</div><div class="hs-l">организаторов</div></div>
+    </div>
+    <div class="formula">Формула: <code>баллы × сложность × вес_направления + бонусы</code></div>
+  </div>
+  <div class="hf-grid" id="hfGrid"></div>
+</div>
+
+<!-- EVENTS -->
+<div id="pg-events" style="display:none">
+  <div class="sec-hd"><div class="sec-ti">Мероприятия</div><div class="sec-su">Все события · отметьтесь QR-кодом для подтверждения участия</div></div>
+  <div class="fb">
+    <button class="fc on" onclick="fEv('ALL',this)">Все</button>
+    <button class="fc" onclick="fEv('IT',this)">💻 IT</button>
+    <button class="fc" onclick="fEv('SOCIAL',this)">🤝 Социальное</button>
+    <button class="fc" onclick="fEv('MEDIA',this)">🎙 Медиа</button>
+    <select class="fc-sel" onchange="sEv(this.value)"><option value="new">Новые</option><option value="pts">По баллам</option><option value="cplx">По сложности</option></select>
+  </div>
+  <div class="evgrid" id="evGrid"></div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="pg-leaderboard" style="display:none">
+  <div class="sec-hd"><div class="sec-ti">Рейтинг лидеров</div><div class="sec-su">Топ-100 · прозрачный алгоритм расчёта</div></div>
+  <div class="fb">
+    <button class="fc on" onclick="fLb('ALL',this)">Все направления</button>
+    <button class="fc" onclick="fLb('IT',this)">💻 IT</button>
+    <button class="fc" onclick="fLb('SOCIAL',this)">🤝 Социальное</button>
+    <button class="fc" onclick="fLb('MEDIA',this)">🎙 Медиа</button>
+  </div>
+  <div class="lb-wrap">
+    <div class="lb-hd"><h3>Глобальная таблица</h3><span style="font-size:11px;color:var(--text3)" id="lbFormula">баллы × сложность × вес + бонусы</span></div>
+    <div class="lb-cols"><div class="lb-ch" style="text-align:center">#</div><div class="lb-ch">Участник</div><div class="lb-ch" style="text-align:right">Баллы</div><div class="lb-ch" style="text-align:center">Событий</div><div class="lb-ch" style="text-align:right">Направление</div></div>
+    <div id="lbTbl"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="pg-dashboard" style="display:none">
+  <div class="sec-hd"><div class="sec-ti">Дашборд активности</div><div class="sec-su">Лента событий, статистика, облако направлений</div></div>
+  <div class="dash-g">
+    <div class="card"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">📡 Последние мероприятия</div><div id="feedList"></div></div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:10px">☁️ Направления</div><div class="tc" id="tagCloud"></div></div>
+      <div class="card"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:10px">📊 Статистика</div><div id="dashStats"></div></div>
+    </div>
+  </div>
+  <div id="myChartWrap" style="display:none"><div class="ac"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">📈 Рост баллов</div><svg style="width:100%;height:150px" id="chartSvg" viewBox="0 0 700 150"></svg></div></div>
+</div>
+
+<!-- PARTICIPANT PROFILE -->
+<div id="pg-participant" style="display:none"><div id="ppC"></div></div>
+
+<!-- ORGANIZER PANEL -->
+<div id="pg-organizer" style="display:none"><div id="opC"></div></div>
+
+<!-- ORG PUBLIC PAGE -->
+<div id="pg-orgpage" style="display:none"><div id="orgpC"></div></div>
+
+<!-- OBSERVER (restricted) -->
+<div id="pg-observer" style="display:none">
+  <div class="sec-hd"><div class="sec-ti">Инспектор кадрового резерва</div><div class="sec-su">Расширенные фильтры · выгрузка отчётов по кандидатам</div></div>
+  <div class="ins-flt">
+    <div class="fld"><div class="fld-l">Город</div><select class="inp" id="fCity" onchange="rInsp()"><option value="">Все</option></select></div>
+    <div class="fld"><div class="fld-l">Возраст от</div><input class="inp" type="number" id="fAgeMin" value="16" min="14" max="35" oninput="rInsp()"/></div>
+    <div class="fld"><div class="fld-l">Возраст до</div><input class="inp" type="number" id="fAgeMax" value="30" min="14" max="35" oninput="rInsp()"/></div>
+    <div class="fld"><div class="fld-l">Мин. событий</div><input class="inp" type="number" id="fMinEv" value="0" min="0" oninput="rInsp()"/></div>
+    <div class="fld"><div class="fld-l">Мин. баллов</div><input class="inp" type="number" id="fMinPts" value="0" min="0" oninput="rInsp()"/></div>
+    <div class="fld"><div class="fld-l">Направление</div><select class="inp" id="fDir" onchange="rInsp()"><option value="">Все</option><option value="IT">IT</option><option value="SOCIAL">Социальное</option><option value="MEDIA">Медиа</option></select></div>
+  </div>
+  <div style="margin-bottom:10px;font-size:12px;color:var(--text2)">Найдено: <b id="iCnt">0</b> кандидатов · <span style="color:var(--text3)">нажмите на строку для детальной карточки</span></div>
+  <div class="ct-wrap">
+    <div class="ct-hd"><div class="ct-hc">Кандидат</div><div class="ct-hc">Город</div><div class="ct-hc" style="text-align:center">Лет</div><div class="ct-hc" style="text-align:center">Событий</div><div class="ct-hc" style="text-align:right">Баллы</div><div class="ct-hc" style="text-align:right">Отчёт</div></div>
+    <div id="inspTbl"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="pg-admin" style="display:none">
+  <div class="sec-hd"><div class="sec-ti">Панель администратора</div><div class="sec-su">Управление мероприятиями, весами и модерация организаторов</div></div>
+  <div class="adgrid">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:14px">➕ Создать мероприятие</div>
+        <div class="fg"><div class="fl">Название</div><input class="fi" id="nEtitle" placeholder="Название мероприятия"/></div>
+        <div class="fg"><div class="fl">Дата</div><input class="fi" id="nEdate" type="date"/></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="fg"><div class="fl">Направление</div><select class="fi" id="nEdir"><option value="IT">IT</option><option value="SOCIAL">Социальное</option><option value="MEDIA">Медиа</option></select></div>
+          <div class="fg"><div class="fl">Сложность (1–5)</div><input class="fi" id="nEcplx" type="number" min="1" max="5" value="3"/></div>
+        </div>
+        <div class="fg"><div class="fl">Баллы за участие</div><input class="fi" id="nEpts" type="number" value="80"/></div>
+        <div class="fg"><div class="fl">Описание</div><textarea class="fi ftx" id="nEdesc" placeholder="Описание…"></textarea></div>
+        <div class="fg"><div class="fl">Призы (через запятую)</div><input class="fi" id="nEprizes" placeholder="Мерч +15, Стажировка +80"/></div>
+        <button class="ba pri" onclick="createEv()" style="width:100%;padding:10px;font-size:13px">Создать мероприятие</button>
+        <div id="evMsg" style="margin-top:7px;font-size:11px;color:var(--grn);display:none">✓ Создано!</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">⚖️ Веса направлений</div>
+        <div class="wr"><div class="wl">💻 IT</div><input class="fi" type="range" min="0.5" max="3" step="0.05" id="wIT" oninput="updW('IT')" style="flex:1"/><div class="wv" id="wIT-v">1.2</div></div>
+        <div class="wr"><div class="wl">🤝 Социальное</div><input class="fi" type="range" min="0.5" max="3" step="0.05" id="wSOCIAL" oninput="updW('SOCIAL')" style="flex:1"/><div class="wv" id="wSOCIAL-v">1.0</div></div>
+        <div class="wr"><div class="wl">🎙 Медиа</div><input class="fi" type="range" min="0.5" max="3" step="0.05" id="wMEDIA" oninput="updW('MEDIA')" style="flex:1"/><div class="wv" id="wMEDIA-v">1.1</div></div>
+        <button class="ba pri" onclick="saveW()" style="width:100%;padding:9px;margin-top:4px;font-size:12px">Сохранить веса</button>
+        <div id="wMsg" style="margin-top:6px;font-size:11px;color:var(--grn);display:none">✓ Веса обновлены!</div>
+      </div>
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">🔒 Модерация организаторов</div>
+        <div id="modQ"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const API_URL = 'http://localhost:3000/api';
+const rnd=(()=>{let s=42;return()=>{s=(s*1831565813+1)>>>0;return s/4294967296};})();
+const pick=a=>a[Math.floor(rnd()*a.length)];
+const ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
+
+const FN=['Алексей','Александра','Анастасия','Артём','Виктория','Владислав','Екатерина','Иван','Кирилл','Константин','Ксения','Максим','Мария','Михаил','Никита','Ольга','Полина','Ростислав','Софья','Татьяна','Фёдор','Юлия','Ярослав','Андрей','Дарья'];
+const LN=['Иванов','Петров','Смирнов','Кузнецов','Попов','Соколов','Лебедев','Козлов','Новиков','Фёдоров','Семёнов','Васильев','Макаров','Морозов','Орлов'];
+const CITIES=['Москва','Санкт-Петербург','Казань','Новосибирск','Екатеринбург','Пермь','Краснодар','Нижний Новгород'];
+const ETI={IT:['Код-лаборатория: Secure by Design','Техносаммит: прототип за 48 ч.','Спринт разработки для НКО','AI-интенсив для молодёжи','Платформа идей: инженерный питч'],SOCIAL:['Форум инициатив','Школа социального проектирования','Тренинг коммуникаций','Лаборатория изменений','Волонтёрский марафон'],MEDIA:['Медиа-студия','Дебаты и питчи','Сила публичного слова','Контент-лаборатория','Сторителлинг']};
+const EDESC={IT:'Участники соберут прототип сервиса: постановка задачи → быстрый прототип → оценка рисков → демонстрация.',SOCIAL:'Команды разработают социальные инициативы с измеримым эффектом и проверят гипотезы через практику.',MEDIA:'Практика от идеи до публикации: учимся объяснять ценность проекта аудитории и отвечать на вопросы жюри.'};
+const PRIZE_POOL=[{k:'merch',l:'Мерч партнёра',bp:15},{k:'ticket',l:'Билет на форум',bp:25},{k:'meeting',l:'Встреча с ментором',bp:35},{k:'grant',l:'Грант',bp:60},{k:'internship',l:'Стажировка',bp:80}];
+const OBIOS=['IT-проекты и кибербезопасность. Делаем события, где уходят с прототипом.','Социальные инициативы. Помогаем упаковать идею и выйти в практику.','Медиа и публичные выступления. Готовим спикеров к питчам.','Интенсивы и хакатоны. Чёткие задачи, менторы, быстрая обратная связь.','Социальное проектирование. Развиваем лидеров вокруг измеримых изменений.'];
+const LEVELS=[{n:'Новичок',m:0},{n:'Бронзовый',m:200},{n:'Серебряный',m:450},{n:'Золотой',m:750},{n:'Премиум',m:1100}];
+const DN={IT:'IT',SOCIAL:'Социальное',MEDIA:'Медиа'};
+
+let W={IT:1.2,SOCIAL:1.0,MEDIA:1.1};
+const NOW=new Date('2025-09-15');
+const gd=off=>{const d=new Date(NOW);d.setDate(d.getDate()+off);return d.toISOString().slice(0,10);};
+const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const evSt=iso=>{const d=(new Date(iso)-NOW)/86400000;return d>7?'future':d<-5?'past':'current';};
+function getLv(pts){let lv=LEVELS[0];for(const l of LEVELS)if(pts>=l.m)lv=l;const i=LEVELS.indexOf(lv);const nx=LEVELS[i+1];return{name:lv.n,next:nx?.n||null,gap:nx?Math.max(0,nx.m-pts):null,min:lv.m,nextMin:nx?.m||null};}
+
+// Generate data
+const participants=Array.from({length:120},(_,i)=>({id:'p'+i,fullName:pick(FN)+' '+pick(LN),city:pick(CITIES),age:ri(17,28)}));
+const organizers=Array.from({length:5},(_,i)=>{
+  const tp=PRIZE_POOL.filter(()=>rnd()<0.55).slice(0,3).map(p=>p.l);
+  return{id:'org'+i,fullName:pick(FN)+' '+pick(LN),city:pick(CITIES),bio:OBIOS[i],typicalPrizes:tp.length?tp:['Мерч партнёра']};
+});
+const orgRequests=[{id:'req1',fullName:'Станислав Воронцов',city:'Пермь',bio:'IT-форматы для молодёжи',date:'2025-09-01'},{id:'req2',fullName:'Анна Беляева',city:'Краснодар',bio:'Социальные команды и коммуникации',date:'2025-09-05'}];
+const events=[];
+for(let i=0;i<55;i++){
+  const dir=['IT','SOCIAL','MEDIA'][i%3];
+  const prizes=PRIZE_POOL.filter(()=>rnd()<0.45).slice(0,3);
+  events.push({id:'e'+i,title:ETI[dir][i%5],dateISO:gd(ri(-110,40)),dir,description:EDESC[dir],complexity:ri(1,5),pts:60+ri(0,50),prizes,organizerId:'org'+(i%5)});
+}
+const participations=[];let ptN=0;
+for(const p of participants){
+  const evts=[...events].sort(()=>rnd()-.5).slice(0,ri(1,7));
+  for(const ev of evts){
+    const st=rnd()<0.07?'rejected':rnd()<0.2?'requested':'confirmed';
+    participations.push({id:'pt'+ptN++,eventId:ev.id,participantId:p.id,organizerId:ev.organizerId,status:st,requestedAt:gd(ri(-90,0))});
+  }
+}
+const reviews=[];let rvN=0;
+for(const org of organizers){for(let i=0;i<ri(5,12);i++){const r=ri(3,5);reviews.push({id:'rv'+rvN++,organizerId:org.id,participantId:pick(participants).id,rating:r,comment:r>=4?'Отличная организация, много практики.':'Интересно, но можно улучшить коммуникацию.',date:gd(ri(-200,0))});}}
+
+// ── STATE ────────────────────────────────────────────────
+let curRole=null,curUID=null,curPage='home';
+let evFilt='ALL',evSort='new',lbDir='ALL';
+let localPts=JSON.parse(JSON.stringify(participations));
+
+// ── CALC ─────────────────────────────────────────────────
+function calcSc(pid,df){
+  let total=0,dirPts={IT:0,SOCIAL:0,MEDIA:0},evCount=0;
+  for(const pt of localPts){
+    if(pt.participantId!==pid||pt.status!=='confirmed')continue;
+    const ev=events.find(e=>e.id===pt.eventId);if(!ev)continue;
+    const bonus=ev.prizes.reduce((a,p)=>a+p.bp,0);
+    const score=ev.pts*ev.complexity*(W[ev.dir]||1)+bonus;
+    total+=score;dirPts[ev.dir]=(dirPts[ev.dir]||0)+score;evCount++;
+  }
+  const pts=df?Math.round(dirPts[df]||0):Math.round(total);
+  return{total:Math.round(total),dirPts:{IT:Math.round(dirPts.IT),SOCIAL:Math.round(dirPts.SOCIAL),MEDIA:Math.round(dirPts.MEDIA)},evCount,pts};
+}
+function orgTr(oid){const rs=reviews.filter(r=>r.organizerId===oid);if(!rs.length)return{avg:0,c:0};return{avg:+(rs.reduce((a,r)=>a+r.rating,0)/rs.length).toFixed(1),c:rs.length};}
+
+// ── DRAWER / NAV ─────────────────────────────────────────
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('ov'),t=document.getElementById('tbTog');const op=d.classList.toggle('open');o.classList.toggle('open',op);t.classList.toggle('open',op);}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');document.getElementById('tbTog').classList.remove('open');}
+
+const PTITLES={home:'Главная',events:'Мероприятия',leaderboard:'Рейтинг',dashboard:'Дашборд активности',participant:'Мой профиль',organizer:'Кабинет организатора',orgpage:'Профиль организатора',observer:'Инспектор резерва',admin:'Администрирование'};
+
+// Navigation definition: base pages + role-specific extensions
+// Key idea: "events" and "leaderboard" appear once — role-specific versions REPLACE them when logged in with that role
+function buildNav(){
+  // BASE nav items (always visible)
+  const base=[
+    {page:'home',icon:'🏠',label:'Главная'},
+    {page:'events',icon:'📅',label:'Мероприятия'},
+    {page:'leaderboard',icon:'🏆',label:'Рейтинг'},
+    {page:'dashboard',icon:'📊',label:'Активность'},
+  ];
+  // Role-specific items (added AFTER base, no duplicates)
+  const roleExtras={
+    participant:[
+      {page:'participant',icon:'👤',label:'Мой профиль'},
+    ],
+    organizer:[
+      {page:'organizer',icon:'📋',label:'Кабинет организатора'},
+      {page:'orgpage',icon:'🌐',label:'Публичная страница'},
+    ],
+    observer:[
+      {page:'observer',icon:'🔍',label:'Инспектор резерва'},
+    ],
+    admin:[
+      {page:'admin',icon:'⚙️',label:'Администрирование'},
+      {page:'organizer',icon:'📋',label:'Подтверждения'},
+      {page:'orgpage',icon:'🌐',label:'Профиль организатора'},
+      {page:'observer',icon:'🔍',label:'Инспектор резерва'},
+    ],
+  };
+
+  const extras=curRole?roleExtras[curRole]||[]:[];
+  // Pending count badge for organizer
+  const pendingCnt=curRole&&curUID?localPts.filter(p=>p.organizerId===curUID&&p.status==='requested').length:0;
+
+  let html='<div class="dsec"><div class="dsl">Навигация</div>';
+  for(const item of base){
+    const on=curPage===item.page?'on':'';
+    html+=`<button class="di ${on}" onclick="goPage('${item.page}',this)"><span class="di-ic">${item.icon}</span>${item.label}</button>`;
+  }
+  html+='</div>';
+
+  if(extras.length){
+    const rl={participant:'Участник',organizer:'Организатор',observer:'Кадровая служба',admin:'Администратор'};
+    html+=`<div class="dsec"><div class="dsl">${rl[curRole]||'Мой кабинет'}</div>`;
+    for(const item of extras){
+      const on=curPage===item.page?'on':'';
+      const badge=(item.page==='organizer'&&pendingCnt>0)?`<span class="di-badge">${pendingCnt}</span>`:'';
+      html+=`<button class="di ${on}" onclick="goPage('${item.page}',this)"><span class="di-ic">${item.icon}</span>${item.label}${badge}</button>`;
+    }
+    html+='</div>';
+  }
+  document.getElementById('dNav').innerHTML=html;
+}
+
+function goPage(page,btn){
+  curPage=page;
+  buildNav(); // re-render nav (updates active state)
+  // hide all pages
+  document.querySelectorAll('[id^="pg-"]').forEach(el=>el.style.display='none');
+  const el=document.getElementById('pg-'+page);
+  if(el)el.style.display='';
+  document.getElementById('tbPT').textContent=PTITLES[page]||page;
+  closeDrawer();
+  // render content
+  if(page==='events')rEvents();
+  else if(page==='leaderboard')rLeaderboard();
+  else if(page==='dashboard')rDashboard();
+  else if(page==='participant')rParticipant();
+  else if(page==='organizer')rOrganizer();
+  else if(page==='orgpage')rOrgPage(curUID||(curRole==='admin'?'org0':null));
+  else if(page==='observer'){populateCityF();rInsp();}
+  else if(page==='admin')rAdmin();
+  else if(page==='home')rHome();
+}
+
+function updateTopbar(){
+  const roleLabels={participant:'Участник',organizer:'Организатор',observer:'Кадровая служба',admin:'Администратор'};
+  let name='',role='Гость';
+  if(curRole){
+    role=roleLabels[curRole]||curRole;
+    if(curRole==='participant')name=(participants.find(p=>p.id===curUID)||{}).fullName||'Участник';
+    else if(curRole==='organizer')name=(organizers.find(o=>o.id===curUID)||{}).fullName||'Организатор';
+    else name=role;
+  }
+  const i=name?ini(name):'?';
+  document.getElementById('tbAv').textContent=i;
+  document.getElementById('tbNm').textContent=name.split(' ')[0]||role;
+  document.getElementById('dAv').textContent=i;
+  document.getElementById('dNm').textContent=name||'Войдите в систему';
+  document.getElementById('dRl').textContent=role;
+  document.getElementById('dAc').textContent=curRole?'→':'→';
+  const btn=document.getElementById('dBtn');
+  if(curRole){btn.textContent='Выйти из системы';btn.classList.add('btn-logout');}
+  else{btn.textContent='Войти в систему';btn.classList.remove('btn-logout');}
+}
+
+// ── LOGIN ────────────────────────────────────────────────
+let selRole2=null;
+function openLogin(){
+  if(curRole){curRole=null;curUID=null;updateTopbar();buildNav();goPage('home',null);return;}
+  document.getElementById('loginM').classList.add('open');
+  selRole2=null;document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('pSel').style.display='none';document.getElementById('lOk').disabled=true;
+}
+function closeLogin(){document.getElementById('loginM').classList.remove('open');}
+document.getElementById('loginM').addEventListener('click',e=>{if(e.target===document.getElementById('loginM'))closeLogin();});
+function selR(r){
+  selRole2=r;document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));document.getElementById('rc'+r[0]).classList.add('sel');
+  const sel=document.getElementById('pSel');const ok=document.getElementById('lOk');
+  if(r==='participant'||r==='organizer'){
+    sel.style.display='';
+    const list=r==='participant'?participants:organizers;
+    sel.innerHTML='<option value="">— профиль —</option>'+list.map(p=>`<option value="${p.id}">${p.fullName} (${p.city})</option>`).join('');
+    sel.onchange=()=>{ok.disabled=!sel.value;};ok.disabled=true;
+  }else{sel.style.display='none';ok.disabled=false;}
+}
+function doLogin(){
+  if(!selRole2)return;
+  curRole=selRole2;
+  curUID=(selRole2==='participant'||selRole2==='organizer')?document.getElementById('pSel').value:null;
+  // if organizer but no profile selected, default to first
+  if(curRole==='organizer'&&!curUID)curUID='org0';
+  closeLogin();updateTopbar();buildNav();
+  // After login, navigate to role-specific page
+  if(curRole==='participant')goPage('participant',null);
+  else if(curRole==='organizer')goPage('organizer',null);
+  else if(curRole==='observer')goPage('observer',null);
+  else if(curRole==='admin')goPage('admin',null);
+}
+
+// ── TAG HELPERS ──────────────────────────────────────────
+function dtag(dir){const m={IT:'t-it',SOCIAL:'t-so',MEDIA:'t-me'};return`<span class="tag ${m[dir]}">${DN[dir]}</span>`;}
+function stag(iso){const s=evSt(iso);const m={current:'t-now',future:'t-soon',past:'t-past'};const l={current:'▶ Сейчас',future:'◎ Скоро',past:'✓ Прошло'};return`<span class="tag ${m[s]}">${l[s]}</span>`;}
+
+// ── QR ───────────────────────────────────────────────────
+function showQR(ptId,title){
+  document.getElementById('qrTx').textContent='Мероприятие: '+title;
+  document.getElementById('qrId').textContent='ID: '+ptId;
+  const svg=document.getElementById('qrSvg');
+  const seed=ptId.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  let cells='';
+  for(let r=0;r<10;r++)for(let c=0;c<10;c++){const dk=((seed*1234+r*97+c*31)%23)>10;if(dk)cells+=`<rect x="${c*16}" y="${r*16}" width="15" height="15" rx="2" fill="#2c2820"/>`;}
+  ['0,0','112,0','0,112'].forEach(p=>{const[x,y]=p.split(',');cells+=`<rect x="${x}" y="${y}" width="32" height="32" rx="3" fill="none" stroke="#2c2820" stroke-width="3"/><rect x="${+x+6}" y="${+y+6}" width="20" height="20" rx="2" fill="#2c2820"/>`;});
+  svg.innerHTML=cells;
+  document.getElementById('qrM').classList.add('open');
+}
+document.getElementById('qrM').addEventListener('click',e=>{if(e.target===document.getElementById('qrM'))document.getElementById('qrM').classList.remove('open');});
+
+// ── HOME ─────────────────────────────────────────────────
+function rHome(){
+  document.getElementById('hs1').textContent=events.length;
+  document.getElementById('hs2').textContent=participants.length;
+  document.getElementById('hs3').textContent=localPts.filter(p=>p.status==='confirmed').length;
+  // Feature cards — filter by role (no observer card for guests)
+  const all=[
+    {icon:'📅',title:'Мероприятия',desc:'Карточки событий с призами, баллами и QR-подтверждением.',page:'events',roles:null},
+    {icon:'🏆',title:'Рейтинг',desc:'Прозрачная таблица лидеров с фильтрами по направлениям.',page:'leaderboard',roles:null},
+    {icon:'📊',title:'Активность',desc:'Лента событий, облако тегов и персональный график.',page:'dashboard',roles:null},
+    {icon:'👤',title:'Мой профиль',desc:'Портфолио, прогресс уровней, место в рейтинге.',page:'participant',roles:['participant']},
+    {icon:'📋',title:'Кабинет организатора',desc:'Подтверждения QR, счётчик событий, отзывы.',page:'organizer',roles:['organizer','admin']},
+    {icon:'🔍',title:'Инспектор резерва',desc:'Фильтры кандидатов и PDF-отчёты.',page:'observer',roles:['observer','admin']},
+    {icon:'⚙️',title:'Администрирование',desc:'Создание событий, веса, модерация организаторов.',page:'admin',roles:['admin']},
+  ];
+  const visible=all.filter(f=>!f.roles||f.roles.includes(curRole));
+  document.getElementById('hfGrid').innerHTML=visible.map(f=>`<div class="hf" onclick="goPage('${f.page}',null)"><div class="hf-i">${f.icon}</div><div class="hf-t">${f.title}</div><div class="hf-d">${f.desc}</div></div>`).join('');
+}
+
+// ── EVENTS ───────────────────────────────────────────────
+async function rEvents() {
+  const grid = document.getElementById('evGrid');
+  // 1. Показываем индикатор загрузки
+  grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text3)">Синхронизация с базой данных...</div>';
+
+  let evts = [];
+
+  try {
+    // 2. Пытаемся получить данные с локального сервера
+    const response = await fetch('http://localhost:3000/api/events');
+    
+    if (response.ok) {
+      evts = await response.json();
+    } else {
+      throw new Error("Ошибка сервера");
+    }
+  } catch (err) {
+    console.warn("Бэкенд недоступен, использую локальный массив данных:", err);
+    // 3. Резервный вариант: если сервер упал, берем данные из твоего старого массива events
+    // (Убедись, что переменная 'events' все еще определена в твоем коде выше)
+    evts = (typeof events !== 'undefined') ? events : [];
+  }
+
+  // 4. Логика фильтрации (по направлениям)
+  let filteredEvts = evts.filter(e => evFilt === 'ALL' || e.dir === evFilt);
+
+  // 5. Логика сортировки
+  if (evSort === 'pts') {
+    filteredEvts.sort((a, b) => b.pts - a.pts);
+  } else if (evSort === 'cplx') {
+    filteredEvts.sort((a, b) => b.complexity - a.complexity);
+  } else {
+    // По умолчанию сортируем по дате (новые сверху)
+    filteredEvts.sort((a, b) => b.dateISO.localeCompare(a.dateISO));
+  }
+
+  // 6. Если данных совсем нет
+  if (filteredEvts.length === 0) {
+    grid.innerHTML = '<div class="notice" style="grid-column: 1/-1">Мероприятия не найдены.</div>';
+    return;
+  }
+
+  // 7. Отрисовка карточек
+  grid.innerHTML = filteredEvts.map(ev => {
+    // Находим имя организатора (если данных нет, пишем 'Организатор')
+    const org = (typeof organizers !== 'undefined') ? organizers.find(o => o.id === ev.organizerId) : null;
+    const orgName = org ? org.fullName : 'Организатор';
+    
+    // Считаем бонусные баллы от призов (если они есть в объекте)
+    const bonusPts = Array.isArray(ev.prizes) ? ev.prizes.reduce((a, p) => a + (p.bp || 0), 0) : 0;
+
+    // Логика кнопок (участие/QR/админ)
+    let actHtml = '';
+    if (curRole === 'participant' && curUID) {
+      const mypt = localPts.find(p => p.eventId === ev.id && p.participantId === curUID);
+      if (mypt?.status === 'confirmed') {
+        actHtml = `<button class="ba gri" disabled>✓ Подтверждено</button>`;
+      } else if (mypt?.status === 'requested') {
+        actHtml = `<button class="ba ambi" onclick="showQR('${mypt.id}','${ev.title.replace(/'/g, "\\'")}')">⏳ Мой QR</button>`;
+      } else {
+        actHtml = `<button class="ba" onclick="joinEv('${ev.id}')">Отметить участие</button>`;
+      }
+    } else if (curRole === 'organizer' || curRole === 'admin') {
+      const pending = localPts.filter(p => p.eventId === ev.id && p.status === 'requested').length;
+      actHtml = pending > 0 ? `<button class="ba" onclick="goPage('organizer',null)">📬 ${pending} заявок</button>` : '';
+    } else if (!curRole) {
+      actHtml = `<button class="ba" onclick="openLogin()">Войти</button>`;
+    }
+
+    // Возвращаем HTML-верстку карточки (твоя оригинальная верстка)
+    return `
+      <div class="evc" id="evc-${ev.id}">
+        <div class="evc-hd">
+          <div class="evc-tags">${dtag(ev.dir)}${stag(ev.dateISO)}</div>
+          <div class="evc-coeff">×${ev.complexity}</div>
+        </div>
+        <div class="evc-ti">${ev.title}</div>
+        <div class="evc-de">${ev.description}</div>
+        <div class="evc-meta">
+          <div class="evc-mi">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+            ${ev.dateISO}
+          </div>
+          <div class="evc-mi evc-org" onclick="openOrgPage('${ev.organizerId}')" style="color:var(--blu);cursor:pointer">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            ${orgName}
+          </div>
+        </div>
+        <div class="evc-pts">
+          <div><div class="evc-pv">${ev.pts}</div><div class="evc-pl">базовых баллов</div></div>
+          ${bonusPts ? `<div style="margin-left:8px"><div style="font-size:13px;font-weight:600;color:var(--grn)">+${bonusPts}</div><div class="evc-pl">бонус</div></div>` : ''}
+        </div>
+        <div class="evc-prizes">
+          ${Array.isArray(ev.prizes) ? ev.prizes.map(p => `<span class="chip ch-a">${p.l} +${p.bp}</span>`).join('') : ''}
+        </div>
+        <div class="cbar"><div class="cbar-f" style="width:${(ev.complexity / 5) * 100}%"></div></div>
+        <div class="evc-ft"><span></span>${actHtml}</div>
+      </div>`;
+  }).join('');
+}
+function fEv(f,btn){evFilt=f;document.querySelectorAll('#pg-events .fc').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rEvents();}
+function sEv(v){evSort=v;rEvents();}
+function joinEv(evId){
+  if(!curUID)return;
+  if(localPts.find(p=>p.eventId===evId&&p.participantId===curUID))return;
+  const ptId='pt_new_'+Date.now();
+  localPts.push({id:ptId,eventId:evId,participantId:curUID,organizerId:events.find(e=>e.id===evId)?.organizerId||'org0',status:'requested',requestedAt:new Date().toISOString().slice(0,10)});
+  rEvents();
+  const ev=events.find(e=>e.id===evId);
+  showQR(ptId,ev?.title||'');
+}
+function openOrgPage(orgId){rOrgPage(orgId);goPage('orgpage',null);}
+
+// ── LEADERBOARD ──────────────────────────────────────────
+function rLeaderboard(){
+  const scores=participants.map(p=>{const c=calcSc(p.id,lbDir==='ALL'?null:lbDir);return{...p,...c};}).sort((a,b)=>b.pts-a.pts||a.fullName.localeCompare(b.fullName)).slice(0,100);
+  document.getElementById('lbTbl').innerHTML=scores.map((p,i)=>{
+    const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';const pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
+    const topDir=Object.entries(calcSc(p.id).dirPts).sort((a,b)=>b[1]-a[1])[0];
+    const clickable=curRole==='observer'||curRole==='admin';
+    return`<div class="lb-row ${pc}" style="${clickable?'cursor:pointer':''}" onclick="${clickable?`showCandDetail('${p.id}')`:''}" >
+      <div class="lb-rk ${rc}">${i+1}</div>
+      <div class="lb-per"><div class="lb-av ${rc}">${ini(p.fullName)}</div><div><div class="lb-nm">${p.fullName}</div><div class="lb-ci">${p.city} · ${p.age} л.</div></div></div>
+      <div class="lb-pts">${p.pts}</div>
+      <div class="lb-ec">${p.evCount}</div>
+      <div class="lb-dr">${topDir?dtag(topDir[0]):''}</div>
+    </div>`;
+  }).join('');
+}
+function fLb(d,btn){lbDir=d;document.querySelectorAll('#pg-leaderboard .fc').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rLeaderboard();}
+
+// ── DASHBOARD ────────────────────────────────────────────
+function rDashboard(){
+  const latest=events.slice().sort((a,b)=>b.dateISO.localeCompare(a.dateISO)).slice(0,10);
+  const dc={IT:'var(--blu)',SOCIAL:'var(--grn)',MEDIA:'var(--ros)'};
+  document.getElementById('feedList').innerHTML=latest.map(ev=>`<div class="feed-i">
+    <div class="feed-dot" style="background:${dc[ev.dir]}"></div>
+    <div><div style="font-size:13px;font-weight:500;color:var(--text)">${ev.title}</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:2px">${ev.dateISO} · ${organizers.find(o=>o.id===ev.organizerId)?.fullName||''}</div></div>
+  </div>`).join('');
+  const counts={IT:events.filter(e=>e.dir==='IT').length,SOCIAL:events.filter(e=>e.dir==='SOCIAL').length,MEDIA:events.filter(e=>e.dir==='MEDIA').length};
+  const mx=Math.max(...Object.values(counts));
+  document.getElementById('tagCloud').innerHTML=Object.entries(counts).map(([d,c])=>`<div class="tc-tag" style="font-size:${11+Math.round((c/mx)*12)}px">${DN[d]} (${c})</div>`).join('');
+  const conf=localPts.filter(p=>p.status==='confirmed').length,req=localPts.filter(p=>p.status==='requested').length;
+  document.getElementById('dashStats').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div class="crd-sm" style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--grn)">${conf}</div><div style="font-size:10px;color:var(--text3)">подтверждений</div></div>
+    <div class="crd-sm" style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--amb)">${req}</div><div style="font-size:10px;color:var(--text3)">ожидают</div></div>
+    <div class="crd-sm" style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--acc)">${participants.length}</div><div style="font-size:10px;color:var(--text3)">участников</div></div>
+    <div class="crd-sm" style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--blu)">${events.length}</div><div style="font-size:10px;color:var(--text3)">мероприятий</div></div>
+  </div>`;
+  const cw=document.getElementById('myChartWrap');
+  if(curRole==='participant'&&curUID){
+    cw.style.display='';
+    const myC=localPts.filter(p=>p.participantId===curUID&&p.status==='confirmed').map(pt=>{const ev=events.find(e=>e.id===pt.eventId);if(!ev)return null;return{date:ev.dateISO,sc:Math.round(ev.pts*ev.complexity*(W[ev.dir]||1)+ev.prizes.reduce((a,p)=>a+p.bp,0))};}).filter(Boolean).sort((a,b)=>a.date.localeCompare(b.date));
+    renderChart(myC);
+  }else cw.style.display='none';
+}
+function renderChart(data){
+  const svg=document.getElementById('chartSvg');
+  if(!data.length){svg.innerHTML='<text x="350" y="80" text-anchor="middle" fill="var(--text3)" font-size="13">Нет подтверждённых событий</text>';return;}
+  let cum=0;const pts=data.map(d=>{cum+=d.sc;return cum;});
+  const W2=680,H=130,pad=12,maxV=Math.max(...pts,1);
+  const points=pts.map((v,i)=>({x:pad+(W2-pad*2)*(i/(pts.length-1||1)),y:H-(H-pad*2)*(v/maxV)-pad,v}));
+  const line=points.map((p,i)=>`${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const area=line+` L${points[points.length-1].x},${H} L${points[0].x},${H} Z`;
+  svg.innerHTML=`<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--acc)" stop-opacity=".18"/><stop offset="100%" stop-color="var(--acc)" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#cg)"/>
+    <path d="${line}" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${points.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="var(--acc)" stroke="white" stroke-width="2"/>`).join('')}
+    <text x="${points[points.length-1].x}" y="${points[points.length-1].y-8}" text-anchor="middle" fill="var(--acc)" font-size="12" font-family="Playfair Display" font-weight="700">${pts[pts.length-1]}</text>`;
+}
+
+// ── PARTICIPANT PROFILE ───────────────────────────────────
+function rParticipant(){
+  const c=document.getElementById('ppC');
+  if(curRole!=='participant'||!curUID){c.innerHTML=`<div class="notice">Эта страница доступна только участникам. <button class="ba" onclick="openLogin()" style="margin-left:8px">Войти</button></div>`;return;}
+  const p=participants.find(x=>x.id===curUID);if(!p){c.innerHTML='<div class="notice">Профиль не найден</div>';return;}
+  const sc=calcSc(curUID);const lv=getLv(sc.total);
+  const allR=participants.map(x=>({id:x.id,pts:calcSc(x.id).total})).sort((a,b)=>b.pts-a.pts);
+  const rank=allR.findIndex(x=>x.id===curUID)+1;
+  const prog=lv.nextMin?Math.min(100,Math.round(((sc.total-lv.min)/(lv.nextMin-lv.min))*100)):100;
+  const myEvts=localPts.filter(pt=>pt.participantId===curUID&&pt.status==='confirmed').map(pt=>{
+    const ev=events.find(e=>e.id===pt.eventId);if(!ev)return null;
+    return{...ev,score:Math.round(ev.pts*ev.complexity*(W[ev.dir]||1)+ev.prizes.reduce((a,p)=>a+p.bp,0)),ptId:pt.id};
+  }).filter(Boolean).sort((a,b)=>b.dateISO.localeCompare(a.dateISO));
+
+  c.innerHTML=`
+    <div class="ph">
+      <div class="ph-top"><div class="ph-av">${ini(p.fullName)}</div>
+        <div><div class="ph-nm">${p.fullName}</div><div class="ph-meta">${p.city} · ${p.age} лет · Уровень: <b>${lv.name}</b></div></div>
+      </div>
+      <div class="ph-stats">
+        <div class="ph-st"><div class="ph-sv">${sc.total}</div><div class="ph-sl">Всего баллов</div></div>
+        <div class="ph-st"><div class="ph-sv">#${rank}</div><div class="ph-sl">Место</div></div>
+        <div class="ph-st"><div class="ph-sv">${sc.evCount}</div><div class="ph-sl">Подтверждено</div></div>
+        <div class="ph-st"><div class="ph-sv">${lv.name}</div><div class="ph-sl">Уровень</div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">📈 Прогноз в кадровый резерв</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--text2)">До уровня <b>${lv.next||'максимум'}</b></span><span style="font-size:12px;font-weight:600;color:var(--acc)">${lv.name}</span></div>
+        <div class="pbar"><div class="pbar-f" style="width:${prog}%"></div></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">${lv.gap?`Ещё <b style="color:var(--acc)">${lv.gap}</b> баллов`:'🎉 Максимальный уровень!'}</div>
+        <div style="margin-top:14px">${Object.entries(sc.dirPts).map(([d,v])=>`<div style="display:flex;align-items:center;gap:9px;margin-bottom:6px">${dtag(d)}<div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden"><div style="height:100%;background:var(--acc);width:${sc.total?Math.min(100,Math.round(v/sc.total*100)):0}%"></div></div><span style="font-size:12px;font-weight:600;color:var(--acc);min-width:32px;text-align:right">${v}</span></div>`).join('')}</div>
+      </div>
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">🏅 Уровни рейтинга</div>
+        ${LEVELS.map(l=>{const act=l.n===lv.name;return`<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--rsm);margin-bottom:5px;background:${act?'var(--acc-bg)':'var(--bg)'};border:1px solid ${act?'var(--acc-bd)':'var(--border)'}">
+          <div style="width:7px;height:7px;border-radius:50%;background:${act?'var(--acc)':'var(--border2)'}"></div>
+          <div style="flex:1;font-size:12px;font-weight:${act?600:400};color:${act?'var(--acc)':'var(--text2)'}">${l.n}</div>
+          <div style="font-size:11px;color:var(--text3)">от ${l.m}</div>
+        </div>`;}).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">📋 Портфолио достижений (${myEvts.length})</div>
+      ${myEvts.length?myEvts.map(ev=>`<div class="pf-i">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">${ev.title}</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${dtag(ev.dir)}<span style="font-size:11px;color:var(--text3)">${ev.dateISO}</span>${ev.prizes.slice(0,2).map(p=>`<span class="chip ch-a">${p.l}</span>`).join('')}</div>
+        </div>
+        <div><div class="pf-pv">${ev.score}</div><div class="pf-ps">баллов</div></div>
+      </div>`).join(''):`<div style="text-align:center;padding:28px;color:var(--text3)">Нет подтверждённых участий</div>`}
+    </div>`;
+}
+
+// ── ORGANIZER PANEL ───────────────────────────────────────
+function rOrganizer(){
+  const c=document.getElementById('opC');
+  if(curRole!=='organizer'&&curRole!=='admin'){c.innerHTML='<div class="notice">Доступно только организаторам.</div>';return;}
+  const oid=curUID||'org0';
+  const org=organizers.find(o=>o.id===oid);
+  const pending=localPts.filter(p=>p.organizerId===oid&&p.status==='requested');
+  const myEvts=events.filter(e=>e.organizerId===oid).sort((a,b)=>b.dateISO.localeCompare(a.dateISO));
+  const trust=orgTr(oid);
+  c.innerHTML=`
+    <div class="oh">
+      <div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="width:56px;height:56px;border-radius:16px;background:var(--grn-bg);border:2px solid var(--grn-bd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--grn);flex-shrink:0">${org?ini(org.fullName):'OG'}</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text)">${org?.fullName||'Организатор'}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">${org?.city||''}</div>
+          <div class="stars">${Array.from({length:5},(_,i)=>`<span class="star ${i<Math.round(trust.avg)?'':'e'}">★</span>`).join('')}<span style="font-size:12px;font-weight:600;color:var(--amb);margin-left:4px">${trust.avg}</span><span style="font-size:11px;color:var(--text3);margin-left:3px">(${trust.c})</span></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--grn)">${myEvts.length}</div>
+          <div style="font-size:11px;color:var(--text3)">мероприятий</div>
+        </div>
+      </div>
+      ${org?.typicalPrizes?.length?`<div style="margin-top:12px;font-size:11px;color:var(--text3);margin-bottom:6px">Типичные призы:</div><div style="display:flex;gap:6px;flex-wrap:wrap">${org.typicalPrizes.map(p=>`<span class="chip ch-g">${p}</span>`).join('')}</div>`:''}
+      <div style="margin-top:10px"><button class="ba" onclick="rOrgPage('${oid}');goPage('orgpage',null)">🌐 Открыть публичную страницу →</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">📬 Заявки на подтверждение <span class="chip ch-r" style="margin-left:6px">${pending.length}</span></div>
+        ${pending.length?pending.slice(0,10).map(pt=>{
+          const ev=events.find(e=>e.id===pt.eventId);const pp=participants.find(p=>p.id===pt.participantId);
+          return`<div class="cq-i">
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">${pp?.fullName||'Участник'}</div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:9px">${ev?.title||''} · ${pt.requestedAt||''}</div>
+            <div style="display:flex;gap:7px">
+              <button class="ba" onclick="showQR('${pt.id}','${(ev?.title||'').replace(/'/g,"\\'")}')">🔲 QR</button>
+              <button class="ba pri" onclick="confPt('${pt.id}')">✓ Подтвердить</button>
+              <button class="ba dan" onclick="rejPt('${pt.id}')">✗</button>
+            </div>
+          </div>`;
+        }).join(''):`<div style="text-align:center;padding:22px;color:var(--text3)">Нет ожидающих</div>`}
+      </div>
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">📅 Мои мероприятия</div>
+        ${myEvts.slice(0,6).map(ev=>`<div style="padding:9px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:500;color:var(--text)">${ev.title}</div>
+          <div style="display:flex;gap:5px;margin-top:3px">${dtag(ev.dir)}<span style="font-size:11px;color:var(--text3)">${ev.dateISO}</span></div></div>
+          <div style="text-align:right"><div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--acc)">${localPts.filter(p=>p.eventId===ev.id&&p.status==='confirmed').length}</div><div style="font-size:9px;color:var(--text3)">подтвердили</div></div>
+        </div>`).join('')}
+        <div style="margin-top:12px">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Отзывы участников</div>
+          ${reviews.filter(r=>r.organizerId===oid).slice(0,3).map(r=>`<div style="padding:8px 10px;background:var(--bg);border-radius:var(--rsm);margin-bottom:6px;border:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px"><div>${Array.from({length:5},(_,i)=>`<span style="color:${i<r.rating?'var(--amb)':'var(--border2)'}">★</span>`).join('')}</div><span style="font-size:10px;color:var(--text3)">${r.date}</span></div>
+            <div style="font-size:12px;color:var(--text2)">${r.comment}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+function confPt(ptId){const pt=localPts.find(p=>p.id===ptId);if(pt)pt.status='confirmed';rOrganizer();buildNav();}
+function rejPt(ptId){const pt=localPts.find(p=>p.id===ptId);if(pt)pt.status='rejected';rOrganizer();buildNav();}
+
+// ── ORG PUBLIC PAGE ───────────────────────────────────────
+let _orgPageId=null;
+function rOrgPage(orgId){
+  _orgPageId=orgId;
+  const c=document.getElementById('orgpC');
+  const org=organizers.find(o=>o.id===orgId)||organizers[0];
+  if(!org){c.innerHTML='<div class="notice">Организатор не найден</div>';return;}
+  const trust=orgTr(org.id);
+  const myEvts=events.filter(e=>e.organizerId===org.id).sort((a,b)=>b.dateISO.localeCompare(a.dateISO));
+  c.innerHTML=`
+    <div style="display:flex;gap:9px;align-items:center;margin-bottom:18px">
+      <button class="ba" onclick="history.back()">← Назад</button>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Публичная страница организатора</div>
+    </div>
+    <div class="oh" style="background:linear-gradient(135deg,var(--acc-bg) 0%,var(--bg3) 60%);border-color:var(--acc-bd)">
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px">
+        <div style="width:64px;height:64px;border-radius:18px;background:var(--acc-bg);border:2px solid var(--acc-bd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--acc);flex-shrink:0">${ini(org.fullName)}</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text)">${org.fullName}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">${org.city}</div>
+          <div class="stars">${Array.from({length:5},(_,i)=>`<span class="star ${i<Math.round(trust.avg)?'':'e'}">★</span>`).join('')}<span style="font-size:13px;font-weight:600;color:var(--amb);margin-left:4px">${trust.avg}/5</span><span style="font-size:12px;color:var(--text3);margin-left:4px">(${trust.c} отзывов)</span></div>
+        </div>
+        <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--acc)">${myEvts.length}</div><div style="font-size:11px;color:var(--text3)">мероприятий</div></div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:12px">${org.bio}</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:7px;font-weight:600">Типичные призы:</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${(org.typicalPrizes||['Мерч партнёра']).map(p=>`<span class="chip ch-g">${p}</span>`).join('')}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">Мероприятия</div>
+        ${myEvts.slice(0,8).map(ev=>`<div style="padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05)">
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:5px">${ev.title}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${dtag(ev.dir)}${stag(ev.dateISO)}<span class="chip ch-a">${ev.pts} баллов</span></div>
+        </div>`).join('')}
+      </div>
+      <div class="card">
+        <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px">Отзывы участников</div>
+        ${reviews.filter(r=>r.organizerId===org.id).slice(0,6).map(r=>`<div style="padding:9px 11px;background:var(--bg);border-radius:var(--rsm);margin-bottom:7px;border:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div>${Array.from({length:5},(_,i)=>`<span style="color:${i<r.rating?'var(--amb)':'var(--border2)'}">★</span>`).join('')}</div><span style="font-size:10px;color:var(--text3)">${r.date}</span></div>
+          <div style="font-size:12px;color:var(--text2)">${r.comment}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── OBSERVER / INSPECTOR ─────────────────────────────────
+function populateCityF(){
+  const sel=document.getElementById('fCity');if(!sel)return;
+  const cities=[...new Set(participants.map(p=>p.city))].sort();
+  sel.innerHTML='<option value="">Все</option>'+cities.map(c=>`<option>${c}</option>`).join('');
+}
+function rInsp(){
+  if(curRole!=='observer'&&curRole!=='admin'){
+    document.getElementById('inspTbl').innerHTML='<div style="text-align:center;padding:24px;color:var(--text3)">Доступно только кадровой службе и администраторам.</div>';
+    return;
+  }
+  const city=document.getElementById('fCity')?.value||'';
+  const ageMin=+document.getElementById('fAgeMin')?.value||16;
+  const ageMax=+document.getElementById('fAgeMax')?.value||30;
+  const minEv=+document.getElementById('fMinEv')?.value||0;
+  const minPts=+document.getElementById('fMinPts')?.value||0;
+  const dir=document.getElementById('fDir')?.value||'';
+  const cands=participants.filter(p=>p.age>=ageMin&&p.age<=ageMax&&(!city||p.city===city)).map(p=>{
+    const sc=calcSc(p.id,dir||null);return{...p,...sc};
+  }).filter(p=>p.evCount>=minEv&&p.pts>=minPts).sort((a,b)=>b.pts-a.pts);
+  document.getElementById('iCnt').textContent=cands.length;
+  document.getElementById('inspTbl').innerHTML=cands.slice(0,60).map(p=>{
+    const topDir=Object.entries(p.dirPts).sort((a,b)=>b[1]-a[1])[0];
+    return`<div class="ct-r" onclick="showCandDetail('${p.id}')">
+      <div><div style="font-size:13px;font-weight:500;color:var(--text)">${p.fullName}</div>${topDir?`<div style="margin-top:2px">${dtag(topDir[0])}</div>`:''}</div>
+      <div style="font-size:12px;color:var(--text3)">${p.city}</div>
+      <div style="font-size:12px;color:var(--text2);text-align:center">${p.age}</div>
+      <div style="font-size:12px;color:var(--text2);text-align:center">${p.evCount}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--acc);text-align:right">${p.pts}</div>
+      <div style="text-align:right"><button class="ba" onclick="event.stopPropagation();genPDF('${p.id}')" style="padding:4px 9px;font-size:11px">PDF ↓</button></div>
+    </div>`;
+  }).join('');
+}
+function showCandDetail(pid){
+  const p=participants.find(x=>x.id===pid);if(!p)return;
+  const sc=calcSc(pid);const lv=getLv(sc.total);
+  const evts=localPts.filter(pt=>pt.participantId===pid&&pt.status==='confirmed').map(pt=>events.find(e=>e.id===pt.eventId)).filter(Boolean);
+  alert(`📋 ${p.fullName}\n${p.city} · ${p.age} лет\n\nБаллов: ${sc.total}\nУровень: ${lv.name}\nСобытий: ${sc.evCount}\n\nIT: ${sc.dirPts.IT} | Соц: ${sc.dirPts.SOCIAL} | Медиа: ${sc.dirPts.MEDIA}\n\nПоследние мероприятия:\n${evts.slice(0,5).map(e=>'  • '+e.title+' ('+e.dateISO+')').join('\n')}`);
+}
+function genPDF(pid){
+  const p=participants.find(x=>x.id===pid);if(!p)return;
+  const sc=calcSc(pid);const lv=getLv(sc.total);
+  const evts=localPts.filter(pt=>pt.participantId===pid&&pt.status==='confirmed').map(pt=>events.find(e=>e.id===pt.eventId)).filter(Boolean);
+  const txt=`ОТЧЁТ ПО КАНДИДАТУ\n${'='.repeat(40)}\nФИО: ${p.fullName}\nГород: ${p.city}\nВозраст: ${p.age}\nУровень: ${lv.name}\nБаллы: ${sc.total}\nСобытий: ${sc.evCount}\n\nПо направлениям:\n  IT: ${sc.dirPts.IT}\n  Социальное: ${sc.dirPts.SOCIAL}\n  Медиа: ${sc.dirPts.MEDIA}\n\nПортфолио:\n${evts.map(e=>`  • ${e.title} (${e.dateISO})`).join('\n')}\n\nСформировано: ${new Date().toLocaleDateString('ru')}\nПлатформа ПолитАктив`;
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`report_${p.fullName.replace(/ /g,'_')}.txt`;a.click();
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+function rAdmin(){
+  if(curRole!=='admin'){return;}
+  for(const d of ['IT','SOCIAL','MEDIA']){
+    const inp=document.getElementById('w'+d);const v=document.getElementById('w'+d+'-v');
+    if(inp){inp.value=W[d];v.textContent=W[d].toFixed(2);}
+  }
+  const mq=document.getElementById('modQ');
+  mq.innerHTML=orgRequests.length?orgRequests.map(r=>`<div class="cq-i">
+    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">${r.fullName} · ${r.city}</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:9px">${r.bio} · ${r.date}</div>
+    <div style="display:flex;gap:7px">
+      <button class="ba pri" onclick="appOrg('${r.id}')">✓ Одобрить</button>
+      <button class="ba dan" onclick="rejOrg('${r.id}')">✗ Отклонить</button>
+    </div>
+  </div>`).join(''):`<div style="text-align:center;padding:18px;color:var(--text3)">Нет заявок</div>`;
+}
+function updW(d){const v=+document.getElementById('w'+d).value;document.getElementById('w'+d+'-v').textContent=v.toFixed(2);}
+function saveW(){for(const d of ['IT','SOCIAL','MEDIA'])W[d]=+document.getElementById('w'+d).value;const m=document.getElementById('wMsg');m.style.display='';setTimeout(()=>m.style.display='none',2000);}
+async function createEv() {
+  const t = document.getElementById('nEtitle').value.trim();
+  if(!t) return alert('Введите название');
+
+  // Собираем данные из полей
+  const newEvent = {
+    title: t,
+    dir: document.getElementById('nEdir').value,
+    dateISO: document.getElementById('nEdate').value || new Date().toISOString().slice(0,10),
+    complexity: +document.getElementById('nEcplx').value || 3,
+    pts: +document.getElementById('nEpts').value || 80,
+    description: document.getElementById('nEdesc').value.trim(),
+    organizerId: curUID || 'org0'
+  };
+
+  // ОТПРАВЛЯЕМ НА БЭКЕНД
+  const response = await fetch(`${API_URL}/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newEvent)
+  });
+
+  if(response.ok) {
+    const res = await response.json();
+    console.log("Создано с ID:", res.id);
+    // Очищаем поля и уведомляем пользователя
+    document.getElementById('evMsg').style.display = '';
+    setTimeout(() => document.getElementById('evMsg').style.display = 'none', 2500);
+  }
+}
+function appOrg(id){const i=orgRequests.findIndex(r=>r.id===id);if(i>=0){const r=orgRequests.splice(i,1)[0];organizers.push({id:'org_new_'+id,fullName:r.fullName,city:r.city,bio:r.bio,typicalPrizes:[]});}rAdmin();}
+function rejOrg(id){const i=orgRequests.findIndex(r=>r.id===id);if(i>=0)orgRequests.splice(i,1);rAdmin();}
+
+// ── INIT ──────────────────────────────────────────────────
+goPage('home',null);
+</script>
+</body>
+</html>
